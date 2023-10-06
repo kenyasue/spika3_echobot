@@ -7,7 +7,12 @@ type Data = {
 
 export default function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<string>
 ) {
-  res.status(200).json({ name: 'John Doe' })
+
+  if(req.method  !== "POST"){
+    res.status(405).send("Method not allowed")
+  }
+
+  res.status(200).send("OK")
 }
