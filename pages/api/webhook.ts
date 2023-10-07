@@ -2,9 +2,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
 
-const accessToken = "jcpuNnqe4lKctn9BMjd8eRFLx9fIgsVj";
-const myUserId = 21;
-const baseURL = "http://localhost:3000";
+const accessToken = process.env.ACCESS_TOKEN;
+const myUserId = parseInt(process.env.USER_ID as string);
+const baseURL = process.env.SPIKA_BASE_URL;
 
 type chatbotEventRequest = {
   event: "load" | "newUser" | "newRoom" | "createContact" | "newMessage"
