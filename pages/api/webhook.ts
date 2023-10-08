@@ -31,6 +31,18 @@ type chatbotEventRequestDataNewMessage = {
   messageType: 'text' | 'file',
 }
 
+type chatbotEventRequestDataNewRoom = {
+  room: {
+    id: number,
+    type: 'private' | 'group',
+    name: string,
+  }
+}
+
+type chatbotEventRequestDataNewUser = {
+  userId: number
+}
+
 
 export default function handler(
   req: NextApiRequest,
@@ -49,7 +61,6 @@ export default function handler(
 
   else if (webhookEvent.event == "newMessage") {
 
-
     (async () => {
 
       try {
@@ -63,7 +74,7 @@ export default function handler(
         if (botId !== myUserId) return;
 
         await axios.post(`${baseURL}/api/messenger/messages`, {
-          roomId: 3,
+          roomId: roomId,
           type: "text",
           body: {
             text: `You said "${message}"`
@@ -80,6 +91,112 @@ export default function handler(
 
 
     })()
+  }
+
+  else if (webhookEvent.event == "newUser") {
+
+    (async () => {
+
+      try {
+        const webbookData: chatbotEventRequestDataNewUser = webhookEvent.data;
+        const userId: number = webbookData.userId;
+        const botId: number = webhookEvent.responsibleBotId;
+
+        if (userId === myUserId) return;
+        if (botId !== myUserId) return;
+
+
+        let roomId: number = 0;
+
+        try {
+          const checkRoomResponse = await axios.get(`${baseURL}/api/messenger/rooms/users/${userId}`, {
+            headers: {
+              Accesstoken: accessToken
+            }
+          });
+
+          console.log(checkRoomResponse);
+
+          roomId = checkRoomResponse.data.room.id;
+
+        } catch (e) {
+
+          // create room
+          const roomResponse = await axios.post(`${baseURL}/api/messenger/rooms`, {
+            userIds: [userId]
+          }, {
+            headers: {
+              Accesstoken: accessToken
+            }
+          });
+
+          console.log(roomResponse)
+          roomId = roomResponse.data.data.room.id;
+
+        }
+
+        await axios.post(`${baseURL}/api/messenger/messages`, {
+          roomId: roomId,
+          type: "text",
+          body: {
+            text: `Hi I'm echo bot. I do nothin. Just say what you said.`
+          }
+        }, {
+          headers: {
+            Accesstoken: accessToken
+          }
+        });
+
+      } catch (e: any) {
+        console.error(`Failed to handle newMessage ${webhookEvent.event}`)
+        console.error(e.message)
+      }
+
+
+    })()
+
+  }
+
+
+  else if (webhookEvent.event == "newRoom") {
+
+    (async () => {
+
+      try {
+        try {
+
+          const webbookData: chatbotEventRequestDataNewRoom = webhookEvent.data;
+          const roomId: number = webbookData.room.id;
+          const botId: number = webhookEvent.responsibleBotId;
+
+          if (botId !== myUserId) return;
+
+          await axios.post(`${baseURL}/api/messenger/messages`, {
+            roomId: roomId,
+            type: "text",
+            body: {
+              text: `Hi I'm echo bot.`
+            }
+          }, {
+            headers: {
+              Accesstoken: accessToken
+            }
+          });
+
+        } catch (e: any) {
+          console.error(`Failed to send message on ${webhookEvent.event}`)
+          console.error(e.message)
+        }
+
+      } catch (e: any) {
+        console.error(`Failed to handle newMessage ${webhookEvent.event}`)
+        console.error(e.message)
+      }
+
+
+    })()
+
+
   }
 
   res.status(200).send("OK")
