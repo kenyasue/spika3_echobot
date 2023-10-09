@@ -95,6 +95,7 @@ export default function handler(
 
   else if (webhookEvent.event == "newUser") {
 
+    /*
     (async () => {
 
       try {
@@ -151,10 +152,10 @@ export default function handler(
         console.error(`Failed to handle newMessage ${webhookEvent.event}`)
         console.error(e.message)
       }
-
+      
 
     })()
-
+    */
   }
 
 
