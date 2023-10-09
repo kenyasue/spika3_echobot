@@ -70,7 +70,7 @@ export default function handler(
         const message: string = webbookData.body;
         const botId: number = webhookEvent.responsibleBotId;
 
-        if (fromUserId === myUserId) return; 6
+        if (fromUserId === myUserId) return; 
         if (botId !== myUserId) return;
 
         await axios.post(`${baseURL}/api/messenger/messages`, {
