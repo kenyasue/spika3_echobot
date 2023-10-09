@@ -2,8 +2,8 @@ module.exports = {
     apps: [
       {
         name: 'spika3_echobot',
-        exec_mode: '1',
-        instances: 'max', // Or a number of instances
+        exec_mode: 'cluster',
+        instances: 1, // Or a number of instances
         script: 'node_modules/next/dist/bin/next',
         args: 'start',
         env_local: {
