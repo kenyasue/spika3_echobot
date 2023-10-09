@@ -70,7 +70,7 @@ export default function handler(
         const message: string = webbookData.body;
         const botId: number = webhookEvent.responsibleBotId;
 
-        if (fromUserId === myUserId) return; 
+        if (fromUserId === myUserId) return;
         if (botId !== myUserId) return;
 
         await axios.post(`${baseURL}/api/messenger/messages`, {
@@ -84,6 +84,9 @@ export default function handler(
             Accesstoken: accessToken
           }
         });
+
+        console.log(`Sent message to ${roomId}`);
+
       } catch (e: any) {
         console.error(`Failed to send message on ${webhookEvent.event}`)
         console.error(e.message)
@@ -183,6 +186,8 @@ export default function handler(
               Accesstoken: accessToken
             }
           });
+
+          console.log(`Sent message to ${roomId}`);
 
         } catch (e: any) {
           console.error(`Failed to send message on ${webhookEvent.event}`)
